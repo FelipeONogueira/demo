@@ -11,6 +11,16 @@ pipeline {
       }
     }
     
+
+    stage('Clean and install') {
+      steps {
+        withMaven(maven: 'apache-maven-3.0.5') {
+          sh 'mvn clean install -DskipTests=true'
+        }
+      }
+    }
+
+    
     stage('SonarQube analysis') {
       steps{
         withSonarQubeEnv('sonarqube') {
@@ -18,7 +28,6 @@ pipeline {
         } // submitted SonarQube taskId is automatically attached to the pipeline context
       }
     }
-
     // stage("Quality Gate"){
     //   steps{
     //     timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
@@ -30,13 +39,6 @@ pipeline {
     //   }
     // }
 
-    stage('Build Api') {
-      steps {
-        withMaven(maven: 'apache-maven-3.0.5') {
-          sh 'mvn clean install -DskipTests=true'
-        }
-      }
-    }
 
   }
 
