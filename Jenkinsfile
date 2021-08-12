@@ -10,22 +10,21 @@ pipeline {
     }
 
     stage('SonarQube analysis') {
-      parallel {
-        stage('SonarQube analysis') {
-          steps {
-            withSonarQubeEnv('sonarqube') {
-              sh 'mvn clean package sonar:sonar'
-            }
-
-          }
+      steps {
+        withSonarQubeEnv('sonarqube') {
+          sh 'mvn clean package sonar:sonar'
         }
+      }
+    }
 
-        stage('Wait SonarQube Analysis') {
-          steps {
-            waitForQualityGate(abortPipeline: true, credentialsId: 'sonarqube', webhookSecretId: '7eb3fb31115252e81a376f1970fb426c81f5702a')
-          }
-        }
-
+    stage('Wait SonarQube Analysis') {
+      steps {
+        script {
+          def qualitygate = waitForQualityGate()
+          if (qualitygate.status != "OK") {
+            error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
+          } 
+        }     
       }
     }
 
