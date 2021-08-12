@@ -14,11 +14,11 @@ pipeline {
         withSonarQubeEnv('sonarqube') {
           sh 'mvn clean package sonar:sonar'
         }
-        script{
-          def qualitygate = waitForQualityGate()
-          if (qualitygate.status != "OK") {
-            error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
-          }
+        
+        sleep(10)
+        def qualitygate = waitForQualityGate()
+        if (qualitygate.status != "OK") {
+          error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
         }
       }
     }
