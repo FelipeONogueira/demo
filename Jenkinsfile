@@ -19,9 +19,9 @@ pipeline {
 
     stage('Wait SonarQube Quality Gate') {
       
-      sleep(10)
       
       steps {
+      sleep(10)
         script {
           def qualitygate = waitForQualityGate(webhookSecretId: 'sonarqube')
           if (qualitygate.status != "OK") {
