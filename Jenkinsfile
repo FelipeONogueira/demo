@@ -14,14 +14,7 @@ pipeline {
         withSonarQubeEnv('sonarqube') {
           sh 'mvn clean package sonar:sonar'
         }
-      }
-    }
-
-    stage('Wait SonarQube Quality Gate') {
-      
-      
-      steps {
-      sleep(10)
+        sleep(10)
         script {
           def qualitygate = waitForQualityGate(webhookSecretId: 'sonarqube')
           if (qualitygate.status != "OK") {
@@ -29,7 +22,7 @@ pipeline {
           }     
         }
       }
-
+      }
     }
 
     stage('Clean and install') {
