@@ -22,7 +22,6 @@ pipeline {
           }     
         }
       }
-      }
     }
 
     stage('Clean and install') {
