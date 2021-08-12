@@ -22,10 +22,12 @@ pipeline {
       sleep(10)
       
       steps {
-        def qualitygate = waitForQualityGate(webhookSecretId: 'sonarqube')
-        if (qualitygate.status != "OK") {
-          error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
-        }     
+        script {
+          def qualitygate = waitForQualityGate(webhookSecretId: 'sonarqube')
+          if (qualitygate.status != "OK") {
+            error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
+          }     
+        }
       }
 
     }
