@@ -1,8 +1,6 @@
 pipeline {
   agent any
-  
   stages {
-   
     stage('Environment Version') {
       steps {
         sh 'git --version'
@@ -10,32 +8,32 @@ pipeline {
         sh 'java -version'
       }
     }
-    
+
     stage('SonarQube analysis') {
-      steps{
-        withSonarQubeEnv('sonarqube') {
-          sh 'mvn clean package sonar:sonar'
-        } // submitted SonarQube taskId is automatically attached to the pipeline context
+      parallel {
+        stage('SonarQube analysis') {
+          steps {
+            withSonarQubeEnv('sonarqube') {
+              sh 'mvn clean package sonar:sonar'
+            }
+
+          }
+        }
+
+        stage('Wait SonarQube Analysis') {
+          steps {
+            waitForQualityGate(abortPipeline: true, credentialsId: 'sonarqube', webhookSecretId: '7eb3fb31115252e81a376f1970fb426c81f5702a')
+          }
+        }
+
       }
     }
 
     stage('Clean and install') {
       steps {
-          sh 'mvn clean install'
+        sh 'mvn clean install'
       }
     }
-    // stage("Quality Gate"){
-    //   steps{
-    //     timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
-    //       def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
-    //       if (qg.status != 'OK') {
-    //         error "Pipeline aborted due to quality gate failure: ${qg.status}"
-    //       }
-    //     }
-    //   }
-    // }
-
 
   }
-
 }
