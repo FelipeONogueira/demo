@@ -11,10 +11,11 @@ pipeline {
 
     stage('SonarQube analysis') {
       steps {
-        withSonarQubeEnv('sonarqube') {
-          sh 'mvn clean package sonar:sonar'
+        withMaven(maven: 'apache-maven-3.6.1') {
+          withSonarQubeEnv('sonarqube') {
+            sh 'mvn clean package sonar:sonar'
+          }
         }
-        sleep(10)
         script {
           def qualitygate = waitForQualityGate(webhookSecretId: 'sonarqube')
           if (qualitygate.status != "OK") {
